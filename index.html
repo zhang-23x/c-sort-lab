@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b0d">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta name="description" content="C 语言排序算法交互实验室：逐行代码、逐步执行、可视化数组变化，从第一行 C 代码理解排序。">
+  <title>SORT/CODE LAB — C 排序算法交互实验室</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atmosphere-grid"></div>
+    <div class="atmosphere-glow atmosphere-glow-a"></div>
+    <div class="atmosphere-glow atmosphere-glow-b"></div>
+    <div class="noise"></div>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="#" id="brandHome" aria-label="回到实验台顶部">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 36 36"><path d="M18 2.75 32 10.7v14.6L18 33.25 4 25.3V10.7Z"/><path d="M13.2 13.5a6.2 6.2 0 1 0 0 9"/></svg>
+      </span>
+      <span class="brand-copy">
+        <strong>SORT/CODE LAB</strong>
+        <span>C ALGORITHM VISUAL COMPANION</span>
+      </span>
+    </a>
+    <div class="topbar-mode" aria-label="当前模式">
+      <span class="live-dot"></span>
+      <span>GUIDED TRACE</span>
+      <i></i>
+      <span>C99</span>
+    </div>
+    <div class="topbar-actions">
+      <span class="topbar-location">31.2304° N &nbsp; 121.4737° E</span>
+      <button class="ghost-button sound-toggle" id="soundToggle" type="button" aria-label="关闭音效" aria-pressed="true" title="关闭音效（M）">
+        <svg class="sound-on" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M3.2 7.4h2.9L10 4.2v11.6L6.1 12.6H3.2Z"/>
+          <path d="M13 7.2a4.6 4.6 0 0 1 0 5.6"/>
+          <path d="M15.4 4.9a8 8 0 0 1 0 10.2"/>
+        </svg>
+        <svg class="sound-off" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M3.2 7.4h2.9L10 4.2v11.6L6.1 12.6H3.2Z"/>
+          <path d="m13 7.5 4.5 5m0-5-4.5 5"/>
+        </svg>
+        <span>音效</span>
+        <kbd>M</kbd>
+      </button>
+      <button class="ghost-button" id="openGuide" type="button">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3.5h9.5A2.5 2.5 0 0 1 16 6v10.5H6.5A2.5 2.5 0 0 1 4 14Z"/><path d="M4 14a2.5 2.5 0 0 1 2.5-2.5H16M7.5 6.5h5M7.5 9.5h4"/></svg>
+        <span>学习指南</span>
+        <kbd>G</kbd>
+      </button>
+    </div>
+  </header>
+
+  <main class="app">
+    <aside class="sidebar" aria-label="算法与数据设置">
+      <div class="side-heading">
+        <div class="eyebrow"><span>ALGORITHM INDEX</span><span>07</span></div>
+        <h2>选择一种<br>排序策略<span class="accent-dot">.</span></h2>
+        <p>每个算法都配有真实 C 代码、逐帧执行轨迹和可回退的变量观察。</p>
+      </div>
+
+      <div class="algorithm-list" id="algorithmList" role="list"></div>
+
+      <section class="data-panel" aria-labelledby="dataTitle">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">INPUT SIGNAL</span>
+            <h3 id="dataTitle">数组数据</h3>
+          </div>
+          <span class="data-length" id="dataLength">12 / 18</span>
+        </div>
+        <form id="arrayForm" novalidate>
+          <label class="sr-only" for="arrayInput">输入 3 到 18 个 1 到 99 之间的整数，用逗号或空格分隔</label>
+          <div class="array-field">
+            <input id="arrayInput" name="array" type="text" inputmode="numeric" enterkeyhint="go" autocomplete="off" spellcheck="false" aria-describedby="arrayHint">
+            <button type="submit" class="apply-button" id="applyArray">应用</button>
+          </div>
+          <div class="array-preview" id="arrayPreview" aria-hidden="true"></div>
+          <p class="field-hint" id="arrayHint">3–18 个整数 · 1–99 · 支持重复值</p>
+        </form>
+        <div class="preset-row" role="group" aria-label="数组预设">
+          <button type="button" class="preset-button" data-preset="random">随机</button>
+          <button type="button" class="preset-button" data-preset="nearly">近乎有序</button>
+          <button type="button" class="preset-button" data-preset="reversed">逆序</button>
+          <button type="button" class="preset-button" data-preset="duplicates">少量重复</button>
+        </div>
+        <button type="button" class="shuffle-button" id="randomArray">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h3.2c3.8 0 4.4 10 8.3 10H17M14 12l3 3-3 3M3 15h3.2c1.4 0 2.4-1.3 3.4-3M14 2l3 3-3 3"/></svg>
+          <span>生成一组新数据</span>
+          <kbd>N</kbd>
+        </button>
+      </section>
+
+      <div class="keyboard-note">
+        <span class="eyebrow">KEYBOARD</span>
+        <div><kbd>←</kbd><kbd>→</kbd><span>单步</span></div>
+        <div><kbd>Space</kbd><span>播放 / 暂停</span></div>
+        <div><kbd>R</kbd><span>复位轨迹</span></div>
+        <div><kbd>M</kbd><span>音效开关</span></div>
+      </div>
+    </aside>
+
+    <section class="workspace" aria-label="排序执行工作区">
+      <header class="algo-header">
+        <div class="algo-heading">
+          <div class="algo-title-line">
+            <span class="algo-index" id="algoIndex">01</span>
+            <div>
+              <p class="algo-en" id="algoEn">BUBBLE SORT</p>
+              <h1 id="algoName">冒泡排序</h1>
+            </div>
+          </div>
+          <p class="algo-summary" id="algoSummary"></p>
+        </div>
+        <div class="algo-meta" id="algoMeta"></div>
+      </header>
+
+      <section class="stage-panel" aria-labelledby="stageTitle">
+        <div class="stage-topline">
+          <div class="phase-label">
+            <span class="phase-spark" aria-hidden="true"></span>
+            <span id="tracePhase">READY TO TRACE</span>
+          </div>
+          <h2 class="sr-only" id="stageTitle">数组可视化</h2>
+          <div class="legend" aria-label="颜色图例">
+            <span><i class="legend-dot is-default"></i>普通</span>
+            <span><i class="legend-dot is-compare"></i>比较</span>
+            <span><i class="legend-dot is-swap"></i>移动</span>
+            <span><i class="legend-dot is-pivot"></i>基准</span>
+            <span><i class="legend-dot is-sorted"></i>已就位</span>
+          </div>
+          <div class="stage-metrics">
+            <span><b id="metricCompare">0</b><small>比较</small></span>
+            <span><b id="metricWrites">0</b><small>写入</small></span>
+            <span><b id="metricSwaps">0</b><small>交换</small></span>
+          </div>
+        </div>
+
+        <div class="stage" id="stage">
+          <div class="gridlines" aria-hidden="true">
+            <span style="--line:25%"></span><span style="--line:50%"></span><span style="--line:75%"></span>
+          </div>
+          <div class="y-axis" aria-hidden="true"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div>
+          <div class="bar-plot" id="barPlot" role="img" aria-label="排序数组柱状图"></div>
+          <div class="axis-row" id="axisRow" aria-hidden="true"></div>
+          <div class="pointer-row" id="pointerRow" aria-hidden="true"></div>
+          <div class="aux-panel" id="auxPanel" hidden>
+            <div class="aux-title"><span>TEMP BUFFER</span><small>辅助数组 tmp[]</small></div>
+            <div class="aux-cells" id="auxCells"></div>
+          </div>
+          <div class="tree-panel" id="treePanel" hidden>
+            <div class="tree-title"><span>HEAP VIEW</span><small>二叉堆结构</small></div>
+            <svg id="treeSvg" role="img" aria-label="当前二叉堆结构"></svg>
+          </div>
+          <div class="stage-caption" id="stageNote">准备好后，点击「下一步」从第一行代码开始。</div>
+        </div>
+
+        <div class="transport">
+          <div class="timeline-row">
+            <div class="step-counter"><span>STEP</span><b id="stepNow">000</b><em>/</em><span id="stepTotal">000</span></div>
+            <div class="timeline-wrap">
+              <div class="timeline-track"><span id="timelineFill"></span></div>
+              <input id="timeline" type="range" min="0" max="1" value="0" step="1" aria-label="执行进度">
+            </div>
+            <label class="speed-control" for="speedRange">
+              <span>速度</span>
+              <input id="speedRange" type="range" min="0.5" max="4" value="1.4" step="0.1" aria-label="播放速度">
+              <b id="speedValue">1.4×</b>
+            </label>
+          </div>
+          <div class="transport-controls">
+            <div class="button-cluster">
+              <button class="icon-button" id="resetBtn" type="button" aria-label="复位轨迹" title="复位轨迹 (R)">
+                <svg viewBox="0 0 20 20"><path d="M4 6.5A7 7 0 1 1 3.2 12"/><path d="M3 2.7v4.5h4.5"/></svg>
+              </button>
+              <button class="icon-button" id="prevBtn" type="button" aria-label="上一步" title="上一步 (←)">
+                <svg viewBox="0 0 20 20"><path d="m12.5 4.5-5 5.5 5 5.5"/><path d="M4.5 3v14"/></svg>
+              </button>
+              <button class="play-button" id="playBtn" type="button" aria-label="自动播放" title="播放 / 暂停 (Space)">
+                <svg class="icon-play" viewBox="0 0 20 20" aria-hidden="true"><path d="m6.5 4 9 6-9 6Z"/></svg>
+                <svg class="icon-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4v12M14 4v12"/></svg>
+                <span id="playLabel">自动播放</span>
+              </button>
+              <button class="icon-button" id="nextBtn" type="button" aria-label="下一步" title="下一步 (→)">
+                <svg viewBox="0 0 20 20"><path d="m7.5 4.5 5 5.5-5 5.5"/><path d="M15.5 3v14"/></svg>
+              </button>
+              <button class="icon-button" id="endBtn" type="button" aria-label="跳到末尾" title="跳到末尾">
+                <svg viewBox="0 0 20 20"><path d="m4 5 5 5-5 5M10 5l5 5-5 5"/></svg>
+              </button>
+            </div>
+            <div class="transport-hint">
+              <span class="hint-dot"></span>
+              <span>单步执行，右侧 C 代码会同步高亮</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="learning-grid">
+        <article class="step-card">
+          <div class="card-heading">
+            <div>
+              <span class="eyebrow">CURRENT OPERATION</span>
+              <h2 id="stepTitle">等待开始</h2>
+            </div>
+            <span class="step-chip" id="stepEyebrow">INIT</span>
+          </div>
+          <p class="step-note" id="stepNote">选择算法、调整数组，然后点击下一步。</p>
+          <div class="why-block">
+            <span class="why-label">WHY / 为什么</span>
+            <p id="whyText">排序算法的核心，是在有限次比较和移动中建立数组的有序性。</p>
+          </div>
+          <div class="watch-block">
+            <span class="eyebrow">VARIABLE WATCH</span>
+            <div class="watch-grid" id="watchGrid">
+              <span class="watch-empty">当前步骤没有活动变量</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="mental-card">
+          <div class="card-heading">
+            <div>
+              <span class="eyebrow">MENTAL MODEL</span>
+              <h2 id="mentalTitle">把问题缩小一点</h2>
+            </div>
+            <span class="mental-glyph" aria-hidden="true">
+              <svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="10"/><path d="M14 4v20M4 14h20M7 7l14 14M21 7 7 21"/></svg>
+            </span>
+          </div>
+          <p class="invariant" id="invariantText"></p>
+          <div class="takeaway-block">
+            <span class="eyebrow">TAKEAWAYS / 记住这几点</span>
+            <ul id="takeaways"></ul>
+          </div>
+          <div class="complexity-strip" id="complexityStrip"></div>
+        </article>
+      </div>
+    </section>
+
+    <aside class="code-rail" aria-label="C 代码">
+      <div class="code-panel">
+        <div class="code-heading">
+          <div>
+            <span class="eyebrow">C IMPLEMENTATION</span>
+            <h2 id="codeFile">bubble_sort.c</h2>
+          </div>
+          <div class="code-actions">
+            <span class="c-badge">C99</span>
+            <button class="icon-button small" id="copyCode" type="button" aria-label="复制当前 C 代码" title="复制代码">
+              <svg viewBox="0 0 20 20"><rect x="7" y="7" width="9" height="9" rx="1"/><path d="M13 7V4H4v9h3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="code-meta">
+          <span id="activeLineLabel">LINE — / —</span>
+          <span title="比较运算符按 ASCII 原样显示：&gt;=、&lt;=、!=">ASCII</span>
+        </div>
+        <div class="code-scroll" id="codeScroll">
+          <pre class="code-view" id="codeView" title="C 源码使用 ASCII 运算符：&gt;=、&lt;=、!=" aria-label="当前排序算法的 C 语言实现，比较运算符使用 ASCII 字符"></pre>
+        </div>
+        <div class="code-footer">
+          <span class="pulse-dot"></span>
+          <span>执行轨迹与代码行同步</span>
+          <span id="codeLineCount">— LINES</span>
+        </div>
+      </div>
+
+      <section class="code-notes">
+        <div class="card-heading compact">
+          <div>
+            <span class="eyebrow">C POINTERS</span>
+            <h2>读代码时注意</h2>
+          </div>
+          <span class="note-index">01—03</span>
+        </div>
+        <ol id="codeTips"></ol>
+      </section>
+
+      <section class="legend-card">
+        <span class="eyebrow">TRACE PROTOCOL</span>
+        <div class="protocol-row"><span>比较</span><code>a[i] &gt; a[j]</code></div>
+        <div class="protocol-row"><span>写入</span><code>a[k] = value</code></div>
+        <div class="protocol-row"><span>交换</span><code>tmp = a[i]</code></div>
+        <p>点击任意代码行，可跳到该行的第一次执行。</p>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <span>SORT/CODE LAB · C 语言排序算法交互实验室</span>
+    <span class="footer-rule"></span>
+    <span>数组以升序排列 · 所有几何元素由代码生成</span>
+    <span class="footer-version">REV 1.0 / 2026</span>
+  </footer>
+
+  <dialog class="guide-modal" id="guideModal" aria-labelledby="guideTitle">
+    <div class="guide-sheet">
+      <div class="guide-top">
+        <span class="eyebrow">FIELD MANUAL / 01</span>
+        <button class="icon-button" id="closeGuide" type="button" aria-label="关闭学习指南">
+          <svg viewBox="0 0 20 20"><path d="m4 4 12 12M16 4 4 16"/></svg>
+        </button>
+      </div>
+      <h2 id="guideTitle">一步一步，读懂排序<span class="accent-dot">.</span></h2>
+      <p class="guide-lead">这不是只播放动画的演示。每一帧都对应 C 代码的一行、一个指针状态和一次真实的数组操作。</p>
+      <div class="guide-grid">
+        <article><span>01</span><h3>选择算法</h3><p>从冒泡、选择、插入、希尔、归并、快速、堆排序中切换。左侧会显示它们的复杂度与特征。</p><div class="guide-key"><kbd>1</kbd>—<kbd>7</kbd></div></article>
+        <article><span>02</span><h3>调整数据</h3><p>输入自己的数组，或使用随机、近乎有序、逆序、少量重复预设，观察算法在不同输入上的行为。</p><div class="guide-key"><kbd>N</kbd> 新数据</div></article>
+        <article><span>03</span><h3>逐步执行</h3><p>点「下一步」逐帧推进；桌面端也可用方向键。比较、移动、基准、已就位会以不同颜色显示。</p><div class="guide-key"><kbd>←</kbd><kbd>→</kbd> 单步</div><p class="guide-sfx">每一步都有轻微音效提示；按 <kbd>M</kbd> 可随时静音。</p></article>
+        <article><span>04</span><h3>对照代码</h3><p>右侧 C 代码会高亮当前语句。点击任意代码行，可直接跳到该语句的首次执行。</p><div class="guide-key"><kbd>G</kbd> 打开指南</div></article>
+      </div>
+      <div class="guide-shortcuts">
+        <span><kbd>Space</kbd> 播放 / 暂停</span>
+        <span><kbd>R</kbd> 复位</span>
+        <span><kbd>M</kbd> 音效</span>
+        <span><kbd>Esc</kbd> 关闭面板</span>
+        <span><kbd>N</kbd> 新数据</span>
+      </div>
+      <div class="guide-footer">
+        <span>数据永远留在浏览器内，不需要联网。</span>
+        <button class="start-button" id="startGuide" type="button">开始实验 <span>→</span></button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="toast-dot"></span>
+    <span id="toastText"></span>
+  </div>
+  <div class="sr-only" id="liveStatus" role="status" aria-live="polite"></div>
+
+  <script src="js/algorithms.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
