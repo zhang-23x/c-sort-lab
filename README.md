@@ -56,6 +56,22 @@ node server.js
 - 学习指南在手机上铺满窗口，内容区独立滚动，底部「开始实验」按钮始终可见。
 - 代码区保持横向独立滚动；页面本身不会出现横向溢出。
 
+## 部署到 Cloudflare Pages
+
+这是一个零运行时依赖的静态项目，构建步骤只把静态资源复制到 `dist/`：
+
+```powershell
+npm run build
+```
+
+Cloudflare Pages 设置：
+
+- Framework preset：`None`
+- Build command：`npm run build`
+- Build output directory：`dist`
+
+本地预览仍使用 `node server.js`。
+
 ## 文件结构
 
 ```text
@@ -68,11 +84,15 @@ c-sort-lab/
 ├─ js/
 │  ├─ algorithms.js 七个算法的轨迹生成器、C 代码与教学文案
 │  └─ app.js        时间轴、代码同步、柱状图/辅助数组/堆树渲染、交互
+├─ scripts/
+│  └─ build.mjs     把静态资源复制到 dist/ 的部署构建脚本
+├─ package.json     构建与本地启动命令
+├─ package-lock.json 锁定的构建环境
 ├─ server.js        本地静态预览服务器
 └─ README.md
 ```
 
-没有构建步骤，没有 CDN，没有外部 3D/图表库。算法轨迹在浏览器内存中生成，数据不会离开本机。
+没有 CDN、外部 3D/图表库或运行时依赖；`npm run build` 只负责生成部署目录，不改变页面逻辑。算法轨迹在浏览器内存中生成，数据不会离开本机。
 
 ## 阅读方式建议
 
